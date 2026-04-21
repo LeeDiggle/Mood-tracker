@@ -52,6 +52,8 @@ button {
 .active {
   background: #22c55e !important;
 }
+
+/* HEATMAP */
 .heatmap {
   display: grid;
   grid-template-columns: repeat(13, 1fr);
@@ -71,6 +73,7 @@ button {
 .level-3 { background: #64748b; }
 .level-4 { background: #22c55e; }
 .level-5 { background: #15803d; }
+
 </style>
 </head>
 
@@ -95,14 +98,12 @@ button {
 </div>
 
 <div class="card" id="message"></div>
-
 <div class="card" id="streak"></div>
-
 <div class="card" id="averages"></div>
-
 <div class="card" id="insights"></div>
 
 <canvas id="chart"></canvas>
+
 <div class="card">
   <h3>Last 90 Days</h3>
   <div id="heatmap" class="heatmap"></div>
@@ -136,7 +137,6 @@ function selectMood(emoji, score) {
 
 function toggleTag(tag) {
   tags[tag] = !tags[tag];
-
   document.getElementById(tag + "Btn").classList.toggle("active");
 }
 
@@ -161,7 +161,6 @@ function saveEntry() {
 
 function updateDashboard() {
   let data = getData();
-  let dates = Object.keys(data).sort();
 
   // 🔥 STREAK
   let streak = 0;
@@ -176,8 +175,7 @@ function updateDashboard() {
   }
 
   document.getElementById("streak").innerText = `🔥 Streak: ${streak} days`;
-renderChart();
-renderHeatmap();
+
   // 📊 Averages
   function avg(days) {
     let now = new Date();
@@ -228,9 +226,11 @@ renderHeatmap();
     insightText += `🦵 Rehab impact: ${diff.toFixed(2)}<br>`;
   }
 
-  document.getElementById("insights").innerHTML = insightText || "Log more data for insights";
+  document.getElementById("insights").innerHTML =
+    insightText || "Log more data for insights";
 
   renderChart();
+  renderHeatmap();
 }
 
 function renderChart() {
@@ -266,13 +266,11 @@ function renderChart() {
   });
 }
 
-updateDashboard();
 function renderHeatmap() {
   const container = document.getElementById("heatmap");
   container.innerHTML = "";
 
   let data = getData();
-
   let today = new Date();
 
   for (let i = 89; i >= 0; i--) {
@@ -289,12 +287,14 @@ function renderHeatmap() {
       div.title = `${key} ${data[key].emoji}`;
     } else {
       div.classList.add("level-0");
-      div.title = `${key} no entry`;
     }
 
     container.appendChild(div);
   }
 }
+
+updateDashboard();
+
 </script>
 
 </body>
