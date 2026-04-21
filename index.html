@@ -52,7 +52,25 @@ button {
 .active {
   background: #22c55e !important;
 }
+.heatmap {
+  display: grid;
+  grid-template-columns: repeat(13, 1fr);
+  gap: 4px;
+  margin-top: 10px;
+}
 
+.day {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 3px;
+}
+
+.level-0 { background: #1e293b; }
+.level-1 { background: #7f1d1d; }
+.level-2 { background: #b45309; }
+.level-3 { background: #64748b; }
+.level-4 { background: #22c55e; }
+.level-5 { background: #15803d; }
 </style>
 </head>
 
@@ -85,6 +103,10 @@ button {
 <div class="card" id="insights"></div>
 
 <canvas id="chart"></canvas>
+<div class="card">
+  <h3>Last 90 Days</h3>
+  <div id="heatmap" class="heatmap"></div>
+</div>
 
 </div>
 
@@ -154,7 +176,8 @@ function updateDashboard() {
   }
 
   document.getElementById("streak").innerText = `🔥 Streak: ${streak} days`;
-
+renderChart();
+renderHeatmap();
   // 📊 Averages
   function avg(days) {
     let now = new Date();
@@ -244,7 +267,34 @@ function renderChart() {
 }
 
 updateDashboard();
+function renderHeatmap() {
+  const container = document.getElementById("heatmap");
+  container.innerHTML = "";
 
+  let data = getData();
+
+  let today = new Date();
+
+  for (let i = 89; i >= 0; i--) {
+    let d = new Date();
+    d.setDate(today.getDate() - i);
+
+    let key = d.toISOString().split('T')[0];
+
+    let div = document.createElement("div");
+    div.classList.add("day");
+
+    if (data[key]) {
+      div.classList.add("level-" + data[key].score);
+      div.title = `${key} ${data[key].emoji}`;
+    } else {
+      div.classList.add("level-0");
+      div.title = `${key} no entry`;
+    }
+
+    container.appendChild(div);
+  }
+}
 </script>
 
 </body>
